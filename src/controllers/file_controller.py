@@ -86,8 +86,23 @@ def download_file(code):
             error_message='This file has expired and is no longer available for download.'
         ), 404
 
-    # Check download limit
-    if file_info['downloads'] >= file_info['max_downloads']:
+    # Check if file exists
+    if not os.path.exists(file_path):
+        del metadata[code]
+        save_metadata(metadata)
+        return render_template('error.html',
+            error_title='File Not Found',
+            error_message='The requested file could not be found on the server.'
+        ), 404
+
+    # Increment download counter before checking limit
+    file_info['downloads'] += 1
+    
+    # Check if this download puts us over the limit
+    if file_info['downloads'] > file_info['max_downloads']:
+        # Clean up the file and metadata
+        if os.path.exists(file_path):
+            os.remove(file_path)
         del metadata[code]
         save_metadata(metadata)
         return render_template('error.html',
@@ -95,28 +110,18 @@ def download_file(code):
             error_message='This file has reached its maximum number of downloads and is no longer available.'
         ), 404
 
+    # Save the updated download count
+    save_metadata(metadata)
+    
     # Serve the file
-    if os.path.exists(file_path):
-        file_info['downloads'] += 1
-        if file_info['downloads'] >= file_info['max_downloads']:
-            os.remove(file_path)
-            del metadata[code]
-        save_metadata(metadata)
-        directory = os.path.dirname(file_path)
-        filename = os.path.basename(file_path)
-        return send_from_directory(
-            directory,
-            filename,
-            as_attachment=True,
-            download_name=file_info['filename']
-        )
-    else:
-        del metadata[code]
-        save_metadata(metadata)
-        return render_template('error.html',
-            error_title='File Not Found',
-            error_message='The requested file could not be found on the server.'
-        ), 404
+    directory = os.path.dirname(file_path)
+    filename = os.path.basename(file_path)
+    return send_from_directory(
+        directory,
+        filename,
+        as_attachment=True,
+        download_name=file_info['filename']
+    )
 
 def cleanup_expired_files():
     metadata = load_metadata()
