@@ -123,6 +123,39 @@ def download_file(code):
         download_name=file_info['filename']
     )
 
+def delete_file(code):
+    metadata = load_metadata()
+
+    if code not in metadata:
+        return jsonify({'error': 'Invalid code'}), 404
+
+    file_info = metadata[code]
+    file_path = file_info['path']
+    expiry_time = datetime.fromisoformat(file_info['expiry_time'])
+
+    # Check expiry
+    if datetime.now() > expiry_time:
+        del metadata[code]
+        save_metadata(metadata)
+        return jsonify({'error': 'File already expired'}), 404
+
+    # Check if still downloadable
+    if file_info['downloads'] > file_info['max_downloads']:
+        del metadata[code]
+        save_metadata(metadata)
+        return jsonify({'error': 'File no longer available'}), 404
+
+    # Delete the file
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    
+    # Remove from metadata
+    del metadata[code]
+    save_metadata(metadata)
+    log.i(f"File deleted: {code}")
+    
+    return jsonify({'message': 'File deleted successfully'}), 200
+
 def cleanup_expired_files():
     metadata = load_metadata()
     updated_metadata = {}

@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 import requests
 import utils.mLogger as log
-from controllers.file_controller import upload_file, download_file
+from controllers.file_controller import upload_file, download_file, delete_file
 from views import views
 
 app = Flask(__name__)
@@ -18,6 +18,9 @@ app.route('/upload', methods=['POST'])(upload_file)
 
 # Route for downloading the file
 app.route('/download/<code>', methods=['GET'])(download_file)
+
+# Route for deleting the file
+app.route('/delete/<code>', methods=['DELETE'])(delete_file)
 
 app.register_blueprint(views)
 
