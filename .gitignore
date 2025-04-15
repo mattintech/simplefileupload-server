@@ -38,3 +38,6 @@ wheels/
 *.swo
 .DS_Store
 
+# Certificates
+cert.pem
+key.pem

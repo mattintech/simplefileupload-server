@@ -33,10 +33,10 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. Set up environment variables:
-   - Copy `.env.example` to `.env`
-   - Set your `CLIENT_KEY` in the `.env` file
-   - Adjust other settings as needed
+4. Set environment variables (optional):
+```bash
+export CLIENT_KEY=your-secret-key  # If not set, defaults to default-secret-key
+```
 
 5. Run the server:
 ```bash
@@ -120,21 +120,13 @@ Delete a file using its code.
 All configuration is handled through environment variables:
 
 ### Required Settings
-- `CLIENT_KEY`: API key for file uploads (required for production)
+None - all settings have defaults for easy testing
 
 ### Optional Settings
+- `CLIENT_KEY`: API key for file uploads (default: default-secret-key)
 - `UPLOAD_FOLDER`: Upload directory path (default: tmp/uploads)
 - `MAX_CONTENT_LENGTH`: Maximum file size (default: 16MB)
 - `DEBUG`: Enable debug mode (default: False)
-
-### Environment File
-The application supports `.env` file for configuration:
-```env
-CLIENT_KEY=your-secret-key-here
-UPLOAD_FOLDER=tmp/uploads
-DEBUG=False
-MAX_CONTENT_LENGTH=16777216
-```
 
 ## Contributing
 1. Fork the repository
@@ -144,7 +136,7 @@ MAX_CONTENT_LENGTH=16777216
 5. Create a Pull Request
 
 ## Security Best Practices
-- Always change the default client key
+- Set a strong CLIENT_KEY in production
 - Use HTTPS in production
 - Regularly monitor disk usage
 - Set appropriate file size limits
