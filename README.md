@@ -46,15 +46,38 @@ python src/app.py
 ### Docker Deployment
 1. Build the image:
 ```bash
-docker build -t file-upload-server .
+docker build -t simplefileupload-server .
 ```
 
-2. Run the container:
+2. Generate SSL Certificate (Required for Mobile App):
+The mobile app requires SSL connections, so you'll need to generate a self-signed certificate or use your own certificate. To create a self-signed certificate:
+```bash
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+```
+
+3. Run the container:
+
+Without SSL (Not compatible with mobile app):
+```bash
+docker run -p 7777:7777 simplefileupload-server
+```
+
+With SSL (Required for mobile app):
+```bash
+docker run -p 7777:7777 \
+  -v $(pwd)/cert.pem:/app/cert.pem \
+  -v $(pwd)/key.pem:/app/key.pem \
+  simplefileupload-server
+```
+
+You can combine the SSL certificates with other options like CLIENT_KEY and upload folder:
 ```bash
 docker run -p 7777:7777 \
   -e CLIENT_KEY=your-secret-key \
+  -v $(pwd)/cert.pem:/app/cert.pem \
+  -v $(pwd)/key.pem:/app/key.pem \
   -v $(pwd)/tmp:/app/tmp \
-  file-upload-server
+  simplefileupload-server
 ```
 
 ## API Endpoints
@@ -69,6 +92,27 @@ Upload a file and receive a download code.
 - `file`: File to upload (required)
 - `max_downloads`: Maximum download count (optional, default: 1)
 - `expiry_hours`: Hours until expiry (optional, default: 24)
+
+**Example using curl:**
+```bash
+# Basic upload with default settings
+curl -X POST http://localhost:7777/upload \
+  -H "X-Client-Key: your-secret-key" \
+  -F "file=@/path/to/your/file.txt"
+
+# Upload with custom download limit and expiry time
+curl -X POST http://localhost:7777/upload \
+  -H "X-Client-Key: your-secret-key" \
+  -F "file=@/path/to/your/file.txt" \
+  -F "max_downloads=5" \
+  -F "expiry_hours=48"
+
+# Upload with SSL (for mobile app compatibility)
+curl -X POST https://localhost:7777/upload \
+  -H "X-Client-Key: your-secret-key" \
+  -F "file=@/path/to/your/file.txt" \
+  --cacert cert.pem
+```
 
 **Response:**
 ```json
