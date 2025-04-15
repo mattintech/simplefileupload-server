@@ -5,7 +5,7 @@ import os
 ''' 
  Constants
 ''' 
-LOG_FILE_NAME = "AngelEyes"
+LOG_FILE_NAME = "SimpleFileUploader"
 LEVEL_INFO = 1
 LEVEL_WARNING = 2
 LEVEL_ERROR = 3
