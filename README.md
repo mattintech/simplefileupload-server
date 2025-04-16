@@ -2,10 +2,13 @@
 
 A lightweight Flask-based file upload and download server with a modern UI. Perfect for temporary file sharing and mobile app log uploads.
 
+The Android mobile app for this server can be found at: https://github.com/mattintech/simplefileupload-android
+
 ## Features
 - Clean, modern UI for file downloads
 - Secure API authentication for uploads
 - Mobile-friendly upload endpoint
+- Specifically designed for the simplefileupload-android app
 - Secure 6-digit alphanumeric code system
 - Automatic file cleanup
 - Configurable download limits and expiry times

@@ -54,23 +54,17 @@
 - [ ] Add audit logging
 
 ### Features
-- [ ] Multi-file upload support
-- [ ] Progress bar for uploads
-- [ ] Email notifications
-- [ ] QR code generation
-- [ ] Preview for images/PDFs
+- [x] Multi-file upload support
 
 ### Infrastructure
 - [ ] Add unit tests
-- [ ] Set up CI/CD pipeline
-- [ ] Implement persistent storage
+- [x] Set up CI/CD pipeline
+- [x] Implement persistent storage
 - [ ] Add monitoring/metrics
 - [ ] Create backup system
 - [ ] Add health check endpoints
 
 ### UI/UX
 - [ ] Dark mode support
-- [ ] Drag-and-drop uploads
-- [ ] Improved mobile UI
 - [ ] Accessibility improvements
 - [ ] Internationalization
