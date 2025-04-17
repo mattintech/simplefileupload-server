@@ -3,7 +3,11 @@ from functools import wraps
 from flask import Flask, request, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 import utils.mLogger as log
-from controllers.file_controller import upload_file, download_file, delete_file
+from controllers.file_controller import (
+    upload_file, download_file, delete_file,
+    start_chunked_upload, upload_chunk, verify_chunks, complete_chunked_upload,
+    cleanup_expired_files, cleanup_abandoned_uploads
+)
 from views import views
 
 app = Flask(__name__)
@@ -12,6 +16,10 @@ app.config['CLIENT_KEY'] = os.environ.get('CLIENT_KEY', 'default-secret-key')
 
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
+
+# Run cleanup on startup
+cleanup_expired_files()
+cleanup_abandoned_uploads()
 
 def require_client_key(f):
     @wraps(f)
@@ -33,12 +41,19 @@ def require_client_key(f):
 # Route for file uploads
 app.route('/upload', methods=['POST'])(require_client_key(upload_file))
 
+# Routes for chunked uploads
+app.route('/upload/start', methods=['POST'])(require_client_key(start_chunked_upload))
+app.route('/upload/chunk', methods=['POST'])(require_client_key(upload_chunk))
+app.route('/upload/verify', methods=['POST'])(require_client_key(verify_chunks))
+app.route('/upload/complete', methods=['POST'])(require_client_key(complete_chunked_upload))
+
 # Route for downloading the file
 app.route('/download/<code>', methods=['GET'])(download_file)
 
 # Route for deleting the file
 app.route('/delete/<code>', methods=['DELETE'])(delete_file)
 
+# Register frontend views
 app.register_blueprint(views)
 
 if __name__ == '__main__':

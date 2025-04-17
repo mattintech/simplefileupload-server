@@ -2,6 +2,7 @@
 tmp/
 uploads/
 file_metadata.json
+chunk_metadata.json
 .env
 
 # Python

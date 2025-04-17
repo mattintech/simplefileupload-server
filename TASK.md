@@ -64,6 +64,15 @@
 - [ ] Create backup system
 - [ ] Add health check endpoints
 
+### Chunked Upload Support
+- [ ] Implement new API endpoints for chunked uploads (/upload/chunk, /upload/start, /upload/complete)
+- [ ] Add server-side chunk management and reassembly
+- [ ] Configure Gunicorn with appropriate timeouts for large uploads
+- [ ] Implement temporary storage for in-progress chunked uploads
+- [ ] Add automatic cleanup for abandoned uploads
+- [ ] Create progress tracking for partially complete uploads
+- [ ] Test with large files (>100MB) over various connection types
+
 ### UI/UX
 - [ ] Dark mode support
 - [ ] Accessibility improvements
