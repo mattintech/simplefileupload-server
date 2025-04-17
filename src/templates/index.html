@@ -22,6 +22,7 @@
             align-items: center;
             min-height: 100vh;
             color: #2d3748;
+            position: relative;
         }
 
         .container {
@@ -169,6 +170,15 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+
+        .version {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            font-size: 0.75rem;
+            color: #718096;
+            opacity: 0.8;
         }
     </style>
     <script>
@@ -322,5 +332,6 @@
             <div class="message"></div>
         </form>
     </div>
+    <div class="version">v{{ version }}</div>
 </body>
 </html>
