@@ -26,6 +26,11 @@
 - [x] Configurable limits
 - [x] API response format
 - [x] API key authentication
+- [x] Chunked upload support
+  - [x] Upload session management
+  - [x] Progress tracking
+  - [x] Resume capability
+  - [x] Chunk verification
 
 ### Download System
 - [x] Code validation
@@ -59,18 +64,21 @@
 ### Infrastructure
 - [ ] Add unit tests
 - [x] Set up CI/CD pipeline
+  - [x] Automated Docker builds
+  - [x] Version tagging
+  - [x] DockerHub publishing
 - [x] Implement persistent storage
 - [ ] Add monitoring/metrics
 - [ ] Create backup system
 - [ ] Add health check endpoints
 
 ### Chunked Upload Support
-- [ ] Implement new API endpoints for chunked uploads (/upload/chunk, /upload/start, /upload/complete)
-- [ ] Add server-side chunk management and reassembly
-- [ ] Configure Gunicorn with appropriate timeouts for large uploads
-- [ ] Implement temporary storage for in-progress chunked uploads
-- [ ] Add automatic cleanup for abandoned uploads
-- [ ] Create progress tracking for partially complete uploads
+- [x] Implement new API endpoints for chunked uploads (/upload/chunk, /upload/start, /upload/complete)
+- [x] Add server-side chunk management and reassembly
+- [x] Configure Gunicorn with appropriate timeouts for large uploads
+- [x] Implement temporary storage for in-progress chunked uploads
+- [x] Add automatic cleanup for abandoned uploads
+- [x] Create progress tracking for partially complete uploads
 - [ ] Test with large files (>100MB) over various connection types
 
 ### UI/UX
