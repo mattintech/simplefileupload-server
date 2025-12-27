@@ -9,8 +9,7 @@ DB_DIR = 'db'
 DB_PATH = os.path.join(DB_DIR, 'file_server.db')
 
 # Ensure database directory exists
-if not os.path.exists(DB_DIR):
-    os.makedirs(DB_DIR)
+os.makedirs(DB_DIR, exist_ok=True)
 
 def get_db_connection():
     """Get a thread-safe database connection with row factory"""
@@ -115,11 +114,13 @@ def init_db():
             CREATE TABLE IF NOT EXISTS server_config (
                 id INTEGER PRIMARY KEY CHECK(id = 1),
                 client_key TEXT NOT NULL,
+                secret_key TEXT,
                 server_address TEXT,
                 server_port INTEGER,
                 created_at TEXT NOT NULL DEFAULT (datetime('now')),
                 updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-                CONSTRAINT client_key_length CHECK(length(client_key) = 64)
+                CONSTRAINT client_key_length CHECK(length(client_key) = 64),
+                CONSTRAINT secret_key_length CHECK(secret_key IS NULL OR length(secret_key) = 64)
             )
         """)
 
@@ -249,6 +250,8 @@ def migrate_client_key_to_db():
 
         if existing > 0:
             log.i("Server config already exists in database, skipping migration")
+            # Check if secret_key needs to be added to existing config
+            migrate_secret_key()
             return
 
     # Get CLIENT_KEY from environment if set
@@ -261,3 +264,29 @@ def migrate_client_key_to_db():
     else:
         log.i("No valid CLIENT_KEY in environment, generating new key")
         init_config()
+
+
+def migrate_secret_key():
+    """Migrate existing server_config to add secret_key if missing"""
+    from models.config_model import generate_secret_key
+
+    try:
+        with get_db() as conn:
+            # Check if secret_key already exists
+            result = conn.execute("SELECT secret_key FROM server_config WHERE id = 1").fetchone()
+
+            if result and result[0]:
+                log.i("Secret key already exists in database")
+                return
+
+            # Generate and add secret_key
+            secret_key = generate_secret_key()
+            conn.execute("""
+                UPDATE server_config
+                SET secret_key = ?
+                WHERE id = 1
+            """, (secret_key,))
+
+            log.i("Added secret key to existing server config")
+    except Exception as e:
+        log.e(f"Error migrating secret key: {e}")

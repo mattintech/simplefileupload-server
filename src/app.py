@@ -14,21 +14,29 @@ from controllers.admin_controller import (
     update_config, regenerate_key
 )
 from views import views
-from models import init_db, migrate_from_json, migrate_client_key_to_db
+from models import init_db, migrate_from_json, migrate_client_key_to_db, get_secret_key
 
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'tmp/uploads'
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', os.urandom(24).hex())
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
-
-if not os.path.exists(app.config['UPLOAD_FOLDER']):
-    os.makedirs(app.config['UPLOAD_FOLDER'])
-
-# Initialize database
+# Initialize database first (before creating Flask app)
 log.i("Initializing database...")
 init_db()
 migrate_from_json()
 migrate_client_key_to_db()
+
+# Get secret key from database
+secret_key = get_secret_key()
+if not secret_key:
+    log.e("Failed to get secret key from database!")
+    secret_key = os.urandom(24).hex()  # Fallback only
+else:
+    log.i(f"Loaded secret key from database (length: {len(secret_key)})")
+
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'tmp/uploads'
+app.config['SECRET_KEY'] = secret_key
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
+
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 # Run cleanup on startup
 cleanup_expired_files()

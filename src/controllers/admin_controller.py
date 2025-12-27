@@ -89,7 +89,7 @@ def setup_admin_totp():
 
         # Convert QR code to base64
         buffer = io.BytesIO()
-        img.save(buffer, format='PNG')
+        img.save(buffer)  # PyPNG doesn't use format parameter
         qr_base64 = base64.b64encode(buffer.getvalue()).decode()
 
         return render_template('admin_setup_totp.html',
@@ -113,7 +113,7 @@ def setup_admin_totp():
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
         buffer = io.BytesIO()
-        img.save(buffer, format='PNG')
+        img.save(buffer)
         qr_base64 = base64.b64encode(buffer.getvalue()).decode()
 
         return render_template('admin_setup_totp.html',
@@ -137,7 +137,7 @@ def setup_admin_totp():
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
         buffer = io.BytesIO()
-        img.save(buffer, format='PNG')
+        img.save(buffer)
         qr_base64 = base64.b64encode(buffer.getvalue()).decode()
 
         return render_template('admin_setup_totp.html',
@@ -287,7 +287,7 @@ def generate_config_qr(server_address, server_port, client_key):
 
         # Convert to base64
         buffer = io.BytesIO()
-        img.save(buffer, format='PNG')
+        img.save(buffer)
         qr_base64 = base64.b64encode(buffer.getvalue()).decode()
 
         return qr_base64

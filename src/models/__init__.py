@@ -38,6 +38,7 @@ from .chunk_model import (
 from .config_model import (
     get_config,
     get_client_key,
+    get_secret_key,
     init_config,
     update_server_address,
     update_server_port,
