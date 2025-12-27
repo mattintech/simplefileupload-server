@@ -2,6 +2,10 @@
 tmp/
 uploads/
 file_metadata.json
+chunk_metadata.json
+admin_data.json
+*.backup
+db/
 .env
 
 # Python

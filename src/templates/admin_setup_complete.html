@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Complete - Simple File Server</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #2d3748;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .icon {
+            color: #48bb78;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            color: #2d3748;
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .step {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .step-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .step-title .material-icons {
+            color: #667eea;
+            font-size: 1.5rem;
+        }
+
+        .qr-container {
+            text-align: center;
+            margin: 1rem 0;
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .qr-code {
+            max-width: 200px;
+            height: auto;
+        }
+
+        .secret-code {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            border: 2px dashed #cbd5e0;
+            margin: 0.5rem 0;
+            text-align: center;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .warning {
+            background-color: #fffaf0;
+            color: #744210;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #ed8936;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+        }
+
+        .warning .material-icons {
+            color: #ed8936;
+            font-size: 1.5rem;
+        }
+
+        button {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.875rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .step-content {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        ol {
+            margin-left: 1.25rem;
+            margin-top: 0.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="material-icons icon">check_circle</span>
+            <h1>Setup Complete!</h1>
+            <p class="subtitle">Your admin account has been created</p>
+        </div>
+
+        <div class="step">
+            <div class="step-content" style="text-align: center;">
+                <p style="font-size: 1.1rem; color: #2d3748; margin-bottom: 1rem;">
+                    Welcome, <strong>{{ username }}</strong>!
+                </p>
+                <p style="color: #4a5568; line-height: 1.6;">
+                    Your administrator account has been successfully created and your authenticator app is configured.
+                    You can now login to access the admin dashboard.
+                </p>
+            </div>
+        </div>
+
+        <div class="warning">
+            <span class="material-icons">info</span>
+            <div>
+                <strong>Important:</strong> Make sure you've saved your authenticator app configuration.
+                You'll need it every time you log in to the admin panel.
+            </div>
+        </div>
+
+        <button onclick="window.location.href='/admin/login'">
+            <span class="material-icons">login</span>
+            Continue to Login
+        </button>
+    </div>
+</body>
+</html>

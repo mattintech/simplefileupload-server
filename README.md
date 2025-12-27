@@ -2,10 +2,14 @@
 
 A lightweight Flask-based file upload and download server with a modern UI. Perfect for temporary file sharing and mobile app log uploads.
 
+The Android mobile app for this server can be found at: https://github.com/mattintech/simplefileupload-android
+
 ## Features
 - Clean, modern UI for file downloads
 - Secure API authentication for uploads
 - Mobile-friendly upload endpoint
+- Chunked upload support for large files
+- Specifically designed for the simplefileupload-android app
 - Secure 6-digit alphanumeric code system
 - Automatic file cleanup
 - Configurable download limits and expiry times
@@ -124,6 +128,100 @@ curl -X POST https://localhost:7777/upload \
 **Error Responses:**
 - 401: Invalid or missing client key
 - 400: Missing file or invalid request
+```json
+{
+  "error": "Error message here"
+}
+```
+
+### POST /upload/start
+Start a chunked upload session for large files.
+
+**Authentication:**
+- Required: `X-Client-Key` header with your API key
+
+**Form Fields:**
+- `filename`: Name of the file being uploaded (required)
+- `total_chunks`: Total number of chunks to expect (required)
+- `max_downloads`: Maximum download count (optional, default: 1)
+- `expiry_hours`: Hours until expiry (optional, default: 24)
+
+**Example using curl:**
+```bash
+# Start a chunked upload session
+curl -X POST http://localhost:7777/upload/start \
+  -H "X-Client-Key: your-secret-key" \
+  -F "filename=largefile.zip" \
+  -F "total_chunks=10" \
+  -F "max_downloads=5" \
+  -F "expiry_hours=48"
+```
+
+**Response:**
+```json
+{
+  "upload_id": "abC123dEf456gHij"
+}
+```
+
+### POST /upload/chunk
+Upload a single chunk of a file.
+
+**Authentication:**
+- Required: `X-Client-Key` header with your API key
+
+**Form Fields:**
+- `upload_id`: Upload session ID from /upload/start (required)
+- `chunk_index`: Index of this chunk, starting from 0 (required)
+- `chunk`: The file chunk data (required)
+
+**Example using curl:**
+```bash
+# Upload chunk 0
+curl -X POST http://localhost:7777/upload/chunk \
+  -H "X-Client-Key: your-secret-key" \
+  -F "upload_id=abC123dEf456gHij" \
+  -F "chunk_index=0" \
+  -F "chunk=@chunk_0.bin"
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "received_chunks": 5,
+  "total_chunks": 10
+}
+```
+
+### POST /upload/complete
+Complete a chunked upload session.
+
+**Authentication:**
+- Required: `X-Client-Key` header with your API key
+
+**Form Fields:**
+- `upload_id`: Upload session ID from /upload/start (required)
+
+**Example using curl:**
+```bash
+# Complete the chunked upload
+curl -X POST http://localhost:7777/upload/complete \
+  -H "X-Client-Key: your-secret-key" \
+  -F "upload_id=abC123dEf456gHij"
+```
+
+**Response:**
+```json
+{
+  "code": "ABC123"
+}
+```
+
+**Error Responses for Chunked Upload Endpoints:**
+- 401: Invalid or missing client key
+- 400: Missing required parameters or invalid request
+- 404: Invalid upload session ID
 ```json
 {
   "error": "Error message here"

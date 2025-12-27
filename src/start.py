@@ -7,7 +7,7 @@ key = os.getenv("SSL_KEY", "key.pem")
 use_ssl = os.path.exists(cert) and os.path.exists(key)
 
 base_cmd = [
-    "gunicorn", "wsgi:app", "--bind", "0.0.0.0:7777"
+    "gunicorn", "wsgi:app", "--bind", "0.0.0.0:7777", "--workers", "4", "--timeout", "300",
 ]
 
 if use_ssl:

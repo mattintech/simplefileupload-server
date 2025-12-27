@@ -26,6 +26,11 @@
 - [x] Configurable limits
 - [x] API response format
 - [x] API key authentication
+- [x] Chunked upload support
+  - [x] Upload session management
+  - [x] Progress tracking
+  - [x] Resume capability
+  - [x] Chunk verification
 
 ### Download System
 - [x] Code validation
@@ -54,23 +59,29 @@
 - [ ] Add audit logging
 
 ### Features
-- [ ] Multi-file upload support
-- [ ] Progress bar for uploads
-- [ ] Email notifications
-- [ ] QR code generation
-- [ ] Preview for images/PDFs
+- [x] Multi-file upload support
 
 ### Infrastructure
 - [ ] Add unit tests
-- [ ] Set up CI/CD pipeline
-- [ ] Implement persistent storage
+- [x] Set up CI/CD pipeline
+  - [x] Automated Docker builds
+  - [x] Version tagging
+  - [x] DockerHub publishing
+- [x] Implement persistent storage
 - [ ] Add monitoring/metrics
 - [ ] Create backup system
 - [ ] Add health check endpoints
 
+### Chunked Upload Support
+- [x] Implement new API endpoints for chunked uploads (/upload/chunk, /upload/start, /upload/complete)
+- [x] Add server-side chunk management and reassembly
+- [x] Configure Gunicorn with appropriate timeouts for large uploads
+- [x] Implement temporary storage for in-progress chunked uploads
+- [x] Add automatic cleanup for abandoned uploads
+- [x] Create progress tracking for partially complete uploads
+- [ ] Test with large files (>100MB) over various connection types
+
 ### UI/UX
 - [ ] Dark mode support
-- [ ] Drag-and-drop uploads
-- [ ] Improved mobile UI
 - [ ] Accessibility improvements
 - [ ] Internationalization
