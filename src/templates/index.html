@@ -280,7 +280,7 @@
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const code = Array.from(inputs).map(input => input.value).join('');
-                
+
                 if (code.length !== 6) {
                     showMessage('Please enter a valid 6-character code.', 'error');
                     return;
@@ -292,8 +292,26 @@
                 downloadButton.textContent = 'Downloading...';
 
                 try {
-                    window.location.assign(`/download/${code}`);
-                    showMessage('Download started!', 'success');
+                    // First check if the code is valid by making a HEAD request
+                    const checkResponse = await fetch(`/download/${code}`, {
+                        method: 'HEAD'
+                    });
+
+                    if (checkResponse.ok) {
+                        // Code is valid, start download and clear the input
+                        window.location.assign(`/download/${code}`);
+                        showMessage('Download started!', 'success');
+
+                        // Clear the code inputs after successful download
+                        setTimeout(() => {
+                            form.reset();
+                            downloadButton.disabled = true;
+                            deleteButton.disabled = true;
+                        }, 500);
+                    } else {
+                        // Code is invalid, show error and don't clear
+                        showMessage('Invalid or expired code. Please check and try again.', 'error');
+                    }
                 } catch (error) {
                     showMessage('Error starting download. Please try again.', 'error');
                 } finally {
