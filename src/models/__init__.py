@@ -1,7 +1,7 @@
 from .file_metadata import FileMetadata
 
 # Database initialization
-from .database import init_db, get_db_connection, migrate_from_json
+from .database import init_db, get_db_connection, migrate_from_json, migrate_client_key_to_db
 
 # Admin model functions
 from .admin_model import (
@@ -32,4 +32,14 @@ from .chunk_model import (
     get_abandoned_sessions,
     cleanup_abandoned,
     update_received_chunks
+)
+
+# Config model functions
+from .config_model import (
+    get_config,
+    get_client_key,
+    init_config,
+    update_server_address,
+    update_server_port,
+    regenerate_client_key
 )

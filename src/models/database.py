@@ -110,6 +110,19 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_chunk_sessions_created_at ON chunk_sessions(created_at)
         """)
 
+        # Server configuration table (singleton)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS server_config (
+                id INTEGER PRIMARY KEY CHECK(id = 1),
+                client_key TEXT NOT NULL,
+                server_address TEXT,
+                server_port INTEGER,
+                created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+                CONSTRAINT client_key_length CHECK(length(client_key) = 64)
+            )
+        """)
+
     log.i("Database initialized successfully")
 
 def migrate_from_json():
@@ -224,3 +237,27 @@ def migrate_from_json():
         log.i("Migration completed successfully")
     else:
         log.i("No migration performed")
+
+
+def migrate_client_key_to_db():
+    """Migrate CLIENT_KEY from environment to database (one-time)"""
+    from models.config_model import init_config
+
+    # Only run if config doesn't exist
+    with get_db() as conn:
+        existing = conn.execute("SELECT COUNT(*) FROM server_config WHERE id = 1").fetchone()[0]
+
+        if existing > 0:
+            log.i("Server config already exists in database, skipping migration")
+            return
+
+    # Get CLIENT_KEY from environment if set
+    env_key = os.environ.get('CLIENT_KEY')
+
+    # Initialize config (will generate new key if env_key is None or default)
+    if env_key and env_key != 'default-secret-key':
+        log.i("Migrating CLIENT_KEY from environment to database")
+        init_config(client_key=env_key)
+    else:
+        log.i("No valid CLIENT_KEY in environment, generating new key")
+        init_config()

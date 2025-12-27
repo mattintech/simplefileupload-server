@@ -3,12 +3,16 @@ import pyotp
 import qrcode
 import io
 import base64
+import json
 from functools import wraps
 from datetime import datetime, timedelta
 from flask import request, jsonify, render_template, session, redirect, url_for, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 import utils.mLogger as log
-from models import get_admin, create_admin, model_admin_exists, update_last_login
+from models import (
+    get_admin, create_admin, model_admin_exists, update_last_login,
+    get_config, update_server_address, update_server_port, regenerate_client_key
+)
 
 def require_admin_auth(f):
     """Decorator to require admin authentication"""
@@ -207,16 +211,37 @@ def admin_login():
     return redirect(url_for('admin_dashboard'))
 
 def admin_dashboard():
-    """Display admin dashboard with client key"""
+    """Display admin dashboard with client key and QR code"""
     if not session.get('admin_authenticated'):
         return redirect(url_for('admin_login'))
 
-    client_key = current_app.config.get('CLIENT_KEY', 'Not configured')
+    # Get server configuration from database
+    config = get_config()
+
+    if not config:
+        log.e("Server configuration not found in database")
+        return render_template('admin_dashboard.html',
+                             error='Server configuration error',
+                             username=session.get('admin_username', 'Admin'))
+
+    client_key = config['client_key']
+    server_address = config.get('server_address') or ''
+    server_port = config.get('server_port') or 7777
     username = session.get('admin_username', 'Admin')
+
+    # Generate QR code if server address and port are configured
+    qr_code_base64 = None
+    if server_address and server_port:
+        qr_code_base64 = generate_config_qr(server_address, server_port, client_key)
 
     return render_template('admin_dashboard.html',
                          client_key=client_key,
-                         username=username)
+                         server_address=server_address,
+                         server_port=server_port,
+                         qr_code=qr_code_base64,
+                         username=username,
+                         success=request.args.get('success'),
+                         error=request.args.get('error'))
 
 def admin_logout():
     """Handle admin logout"""
@@ -225,3 +250,94 @@ def admin_logout():
     session.pop('admin_username', None)
     log.i(f"Admin user logged out: {username}")
     return redirect(url_for('admin_login'))
+
+
+def generate_config_qr(server_address, server_port, client_key):
+    """Generate QR code containing server configuration
+
+    Args:
+        server_address: Server IP or hostname
+        server_port: Server port number
+        client_key: Client authentication key
+
+    Returns:
+        str: Base64-encoded PNG image of QR code
+        None: If error occurred
+    """
+    try:
+        # Create JSON configuration
+        config_data = {
+            "server": server_address,
+            "port": server_port,
+            "key": client_key
+        }
+        config_json = json.dumps(config_data)
+
+        # Generate QR code
+        qr = qrcode.QRCode(
+            version=None,  # Auto-size
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4
+        )
+        qr.add_data(config_json)
+        qr.make(fit=True)
+
+        img = qr.make_image(fill_color="black", back_color="white")
+
+        # Convert to base64
+        buffer = io.BytesIO()
+        img.save(buffer, format='PNG')
+        qr_base64 = base64.b64encode(buffer.getvalue()).decode()
+
+        return qr_base64
+    except Exception as e:
+        log.e(f"Error generating QR code: {e}")
+        return None
+
+
+@require_admin_auth
+def update_config():
+    """Handle server configuration updates from admin dashboard"""
+    if request.method != 'POST':
+        return redirect(url_for('admin_dashboard'))
+
+    server_address = request.form.get('server_address', '').strip()
+    server_port = request.form.get('server_port', '').strip()
+
+    # Validate inputs
+    if not server_address:
+        return redirect(url_for('admin_dashboard', error='Server address is required'))
+
+    try:
+        port = int(server_port)
+        if port < 1 or port > 65535:
+            raise ValueError("Port out of range")
+    except (ValueError, TypeError):
+        return redirect(url_for('admin_dashboard', error='Invalid port number'))
+
+    # Update database
+    if not update_server_address(server_address):
+        return redirect(url_for('admin_dashboard', error='Failed to update server address'))
+
+    if not update_server_port(port):
+        return redirect(url_for('admin_dashboard', error='Failed to update server port'))
+
+    log.i(f"Server configuration updated: {server_address}:{port}")
+    return redirect(url_for('admin_dashboard', success='Configuration updated successfully'))
+
+
+@require_admin_auth
+def regenerate_key():
+    """Handle client key regeneration"""
+    if request.method != 'POST':
+        return redirect(url_for('admin_dashboard'))
+
+    # Regenerate the key
+    new_key = regenerate_client_key()
+
+    if not new_key:
+        return redirect(url_for('admin_dashboard', error='Failed to regenerate client key'))
+
+    log.w(f"Client key regenerated by admin: {session.get('admin_username')}")
+    return redirect(url_for('admin_dashboard', success='Client key regenerated successfully. All clients must update!'))

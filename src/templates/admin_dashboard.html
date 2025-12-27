@@ -27,12 +27,61 @@
 
         .container {
             background: rgba(255, 255, 255, 0.95);
-            padding: 2.5rem;
+            padding: 2rem;
             border-radius: 1rem;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             width: 90%;
-            max-width: 600px;
+            max-width: 900px;
             backdrop-filter: blur(10px);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: #718096;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
         .header {
@@ -90,9 +139,8 @@
 
         .card {
             background: #f7fafc;
-            padding: 1.5rem;
+            padding: 1.25rem;
             border-radius: 0.75rem;
-            margin-bottom: 1.5rem;
             border-left: 4px solid #667eea;
         }
 
@@ -160,13 +208,14 @@
         .info-box {
             background: #ebf8ff;
             color: #2c5282;
-            padding: 1rem;
+            padding: 0.75rem;
             border-radius: 0.5rem;
-            border-left: 4px solid #4299e1;
-            font-size: 0.85rem;
-            line-height: 1.6;
+            border-left: 3px solid #4299e1;
+            font-size: 0.8rem;
+            line-height: 1.5;
             display: flex;
-            gap: 0.75rem;
+            gap: 0.5rem;
+            margin-top: 1rem;
         }
 
         .info-box .material-icons {
@@ -205,7 +254,7 @@
         .actions {
             display: flex;
             gap: 1rem;
-            margin-top: 1.5rem;
+            margin-top: 2rem;
         }
 
         .btn {
@@ -243,17 +292,262 @@
         .btn-secondary:hover {
             background: #f7fafc;
         }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group:last-of-type {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-hint {
+            display: block;
+            color: #718096;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        .key-actions {
+            margin-top: 1rem;
+        }
+
+        .btn-danger {
+            background: #fff5f5;
+            color: #e53e3e;
+            border: 2px solid #e53e3e;
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .qr-container {
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 0.5rem;
+            border: 2px solid #e2e8f0;
+            margin-bottom: 0.75rem;
+        }
+
+        .qr-image {
+            max-width: 250px;
+            width: 100%;
+            height: auto;
+        }
+
+        .error-message {
+            background: #fff5f5;
+            color: #c53030;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        .error-message .material-icons {
+            color: #e53e3e;
+        }
+
+        .qr-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .btn-icon {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-download {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-copy-config {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-copy-config:hover {
+            background: #f7fafc;
+        }
     </style>
     <script>
         function copyToClipboard() {
             const keyText = document.querySelector('.key-display').textContent;
             navigator.clipboard.writeText(keyText).then(() => {
-                const successMsg = document.querySelector('.success-message');
+                const successMsg = document.getElementById('copy-success');
                 successMsg.style.display = 'flex';
                 setTimeout(() => {
                     successMsg.style.display = 'none';
                 }, 3000);
             });
+        }
+
+        function validateConfig() {
+            const address = document.getElementById('server_address').value.trim();
+            const port = parseInt(document.getElementById('server_port').value);
+
+            if (!address) {
+                alert('Server address is required');
+                return false;
+            }
+
+            if (isNaN(port) || port < 1 || port > 65535) {
+                alert('Port must be between 1 and 65535');
+                return false;
+            }
+
+            return true;
+        }
+
+        function confirmRegenerate() {
+            const confirmed = confirm(
+                'WARNING: Regenerating the client key will immediately invalidate the current key.\n\n' +
+                'All Android apps and clients using the old key will be unable to upload files until they are updated with the new key.\n\n' +
+                'Are you sure you want to continue?'
+            );
+
+            if (confirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/admin/regenerate-key';
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected tab content
+            const selectedContent = document.getElementById(tabName + '-tab');
+            if (selectedContent) {
+                selectedContent.classList.add('active');
+            }
+
+            // Add active class to clicked tab
+            event.target.closest('.tab').classList.add('active');
+        }
+
+        function downloadQRCode() {
+            const qrImage = document.querySelector('.qr-image');
+            if (!qrImage) return;
+
+            // Convert base64 to blob and download
+            const base64Data = qrImage.src.split(',')[1];
+            const byteCharacters = atob(base64Data);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: 'image/png' });
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'server-config-qr.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+
+            // Show success message
+            showCopySuccess('QR code downloaded!');
+        }
+
+        async function copyQRConfig() {
+            const qrImage = document.querySelector('.qr-image');
+            if (!qrImage) return;
+
+            try {
+                // Convert base64 to blob
+                const base64Data = qrImage.src.split(',')[1];
+                const byteCharacters = atob(base64Data);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: 'image/png' });
+
+                // Copy to clipboard
+                await navigator.clipboard.write([
+                    new ClipboardItem({
+                        'image/png': blob
+                    })
+                ]);
+
+                showCopySuccess('QR code copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy QR code:', err);
+                alert('Failed to copy QR code to clipboard. Your browser may not support this feature.');
+            }
+        }
+
+        function showCopySuccess(message) {
+            const successMsg = document.getElementById('copy-success');
+            const messageSpan = successMsg.querySelector('span:last-child');
+            if (messageSpan) {
+                const originalMessage = messageSpan.textContent;
+                messageSpan.textContent = message;
+                successMsg.style.display = 'flex';
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                    messageSpan.textContent = originalMessage;
+                }, 3000);
+            }
         }
     </script>
 </head>
@@ -273,11 +567,83 @@
             </a>
         </div>
 
-        <div class="success-message">
+        <!-- Error Message -->
+        {% if error %}
+        <div class="error-message">
+            <span class="material-icons">error</span>
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <!-- Success Message -->
+        {% if success %}
+        <div class="success-message" style="display: flex;">
             <span class="material-icons">check_circle</span>
-            Client key copied to clipboard!
+            {{ success }}
+        </div>
+        {% endif %}
+
+        <div class="success-message" id="copy-success">
+            <span class="material-icons">check_circle</span>
+            <span>Client key copied to clipboard!</span>
         </div>
 
+        <!-- Tabs Navigation -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('config')">
+                <span class="material-icons" style="font-size: 1.2rem; vertical-align: middle;">settings</span>
+                Configuration
+            </button>
+            <button class="tab" onclick="switchTab('qrcode')" {% if not qr_code %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
+                <span class="material-icons" style="font-size: 1.2rem; vertical-align: middle;">qr_code_2</span>
+                QR Code
+            </button>
+        </div>
+
+        <!-- Configuration Tab -->
+        <div id="config-tab" class="tab-content active">
+        <div class="cards-grid">
+        <!-- Server Configuration Card -->
+        <div class="card">
+            <div class="card-title">
+                <span class="material-icons">settings</span>
+                Server Configuration
+            </div>
+
+            <form method="POST" action="/admin/config" onsubmit="return validateConfig()">
+                <div class="form-group">
+                    <label for="server_address">Server Address</label>
+                    <input type="text"
+                           id="server_address"
+                           name="server_address"
+                           class="form-input"
+                           value="{{ server_address }}"
+                           placeholder="e.g., 192.168.1.100 or myserver.com"
+                           required>
+                    <small class="form-hint">IP address or hostname where the server is accessible</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="server_port">Port</label>
+                    <input type="number"
+                           id="server_port"
+                           name="server_port"
+                           class="form-input"
+                           value="{{ server_port }}"
+                           min="1"
+                           max="65535"
+                           required>
+                    <small class="form-hint">Port number (default: 7777)</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <span class="material-icons">save</span>
+                    Save Configuration
+                </button>
+            </form>
+        </div>
+
+        <!-- Client Key Card -->
         <div class="card">
             <div class="card-title">
                 <span class="material-icons">vpn_key</span>
@@ -289,17 +655,73 @@
                     <span class="material-icons">content_copy</span>
                 </button>
             </div>
-        </div>
 
-        <div class="info-box">
-            <span class="material-icons">info</span>
-            <div>
-                <strong>What is the Client Key?</strong><br>
-                This key is used by clients to authenticate API requests to the file server.
-                It should be included in the <code>X-Client-Key</code> header for all upload operations.
-                Keep this key secure and don't share it publicly.
+            <div class="info-box">
+                <span class="material-icons">info</span>
+                <div>
+                    <strong>What is the Client Key?</strong><br>
+                    This key is used by clients to authenticate API requests to the file server.
+                    It should be included in the <code>X-Client-Key</code> header for all upload operations.
+                    Keep this key secure and don't share it publicly.
+                </div>
+            </div>
+
+            <div class="key-actions">
+                <button type="button" class="btn btn-danger" onclick="confirmRegenerate()">
+                    <span class="material-icons">refresh</span>
+                    Regenerate Key
+                </button>
             </div>
         </div>
+        </div><!-- end cards-grid -->
+        </div><!-- end config-tab -->
+
+        <!-- QR Code Tab -->
+        <div id="qrcode-tab" class="tab-content">
+        {% if qr_code %}
+        <div class="card">
+            <div class="card-title">
+                <span class="material-icons">qr_code_2</span>
+                QR Code for Android App
+            </div>
+
+            <div class="qr-container">
+                <img src="data:image/png;base64,{{ qr_code }}" alt="Configuration QR Code" class="qr-image">
+            </div>
+
+            <div class="info-box">
+                <span class="material-icons">info</span>
+                <div>
+                    Scan this QR code with the Simple File Upload Android app to automatically configure:
+                    <ul style="margin: 0.5rem 0 0 1.5rem;">
+                        <li>Server address: <strong>{{ server_address }}</strong></li>
+                        <li>Port: <strong>{{ server_port }}</strong></li>
+                        <li>Client key: <strong>(hidden)</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="qr-actions">
+                <button class="btn-icon btn-download" onclick="downloadQRCode()">
+                    <span class="material-icons">download</span>
+                    Download PNG
+                </button>
+                <button class="btn-icon btn-copy-config" onclick="copyQRConfig()">
+                    <span class="material-icons">content_copy</span>
+                    Copy QR Code
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <div class="info-box" style="background: #fef5e7; border-left-color: #f39c12; color: #7d6608;">
+            <span class="material-icons" style="color: #f39c12;">warning</span>
+            <div>
+                <strong>Configure server settings to generate QR code</strong><br>
+                Enter your server address and port above to generate a QR code for the Android app.
+            </div>
+        </div>
+        {% endif %}
+        </div><!-- end qrcode-tab -->
 
         <div class="actions">
             <a href="/" class="btn btn-secondary">
