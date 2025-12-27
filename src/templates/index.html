@@ -180,6 +180,87 @@
             color: #718096;
             opacity: 0.8;
         }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal h2 {
+            color: #2d3748;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .modal p {
+            color: #4a5568;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .modal-buttons button {
+            padding: 0.625rem 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .modal-cancel {
+            background-color: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .modal-cancel:hover {
+            background-color: #cbd5e0;
+        }
+
+        .modal-confirm {
+            background-color: #e53e3e;
+        }
+
+        .modal-confirm:hover {
+            background-color: #c53030;
+        }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -189,6 +270,9 @@
             const deleteButton = document.querySelector('.delete-button');
             const spinner = document.querySelector('.spinner');
             const message = document.querySelector('.message');
+            const deleteModal = document.getElementById('deleteModal');
+            const modalCancel = document.getElementById('modalCancel');
+            const modalConfirm = document.getElementById('modalConfirm');
 
             const showMessage = (text, type) => {
                 message.textContent = text;
@@ -197,6 +281,38 @@
                 setTimeout(() => {
                     message.style.display = 'none';
                 }, 5000);
+            };
+
+            const showDeleteModal = () => {
+                return new Promise((resolve) => {
+                    deleteModal.classList.add('active');
+
+                    const handleConfirm = () => {
+                        deleteModal.classList.remove('active');
+                        modalConfirm.removeEventListener('click', handleConfirm);
+                        modalCancel.removeEventListener('click', handleCancel);
+                        deleteModal.removeEventListener('click', handleOverlayClick);
+                        resolve(true);
+                    };
+
+                    const handleCancel = () => {
+                        deleteModal.classList.remove('active');
+                        modalConfirm.removeEventListener('click', handleConfirm);
+                        modalCancel.removeEventListener('click', handleCancel);
+                        deleteModal.removeEventListener('click', handleOverlayClick);
+                        resolve(false);
+                    };
+
+                    const handleOverlayClick = (e) => {
+                        if (e.target === deleteModal) {
+                            handleCancel();
+                        }
+                    };
+
+                    modalConfirm.addEventListener('click', handleConfirm);
+                    modalCancel.addEventListener('click', handleCancel);
+                    deleteModal.addEventListener('click', handleOverlayClick);
+                });
             };
 
             inputs.forEach((input, index) => {
@@ -237,13 +353,14 @@
             deleteButton.addEventListener('click', async (e) => {
                 e.preventDefault();
                 const code = Array.from(inputs).map(input => input.value).join('');
-                
+
                 if (code.length !== 6) {
                     showMessage('Please enter a valid 6-character code.', 'error');
                     return;
                 }
 
-                if (!confirm('Are you sure you want to delete this file? This action cannot be undone.')) {
+                const confirmed = await showDeleteModal();
+                if (!confirmed) {
                     return;
                 }
 
@@ -351,5 +468,16 @@
         </form>
     </div>
     <div class="version">v{{ version }}</div>
+
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal">
+            <h2>Delete File</h2>
+            <p>Are you sure you want to delete this file? This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button type="button" class="modal-cancel" id="modalCancel">Cancel</button>
+                <button type="button" class="modal-confirm" id="modalConfirm">Delete</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
