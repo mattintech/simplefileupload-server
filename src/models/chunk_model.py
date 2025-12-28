@@ -81,6 +81,9 @@ def add_chunk(upload_id, chunk_index):
         with get_db() as conn:
             cursor = conn.cursor()
 
+            # Use IMMEDIATE transaction to prevent race conditions with parallel uploads
+            cursor.execute("BEGIN IMMEDIATE")
+
             # Get current received_chunks
             row = cursor.execute("""
                 SELECT received_chunks FROM chunk_sessions WHERE upload_id = ?
